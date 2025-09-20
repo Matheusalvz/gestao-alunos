@@ -2,10 +2,14 @@
 
     <div class="header">
       <img src="assets/logo.png" alt="Inicie" class="logo" />
-      <h1>Lista de Alunos</h1>
+      <h1>Gestão de Alunos</h1>
     </div>
-  
-    <button mat-raised-button color="primary" (click)="adicionarAluno()">Adicionar Aluno</button>
+
+    <div class="sub-header">
+      <span class="welcome-message">Olá, seja bem-vindo</span>
+      <button mat-raised-button color="primary" (click)="adicionarAluno()">Adicionar Aluno</button>
+    </div>
+
     <table mat-table [dataSource]="alunos" class="mat-elevation-z8">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Nome </th>
