@@ -1,0 +1,30 @@
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+  
+    .form-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 400px;
+      gap: 16px;
+    }
+  
+    .acoes-container {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+  
+    .confirm-button {
+      min-width: 150px;
+      border-style: none;
+      border-width: 0px;
+      border-radius: 5px;
+      color: #ffffff !important;
+      background-color: #e6532d;
+    }
+  }
