@@ -28,7 +28,12 @@
                 "glob": "**/*",
                 "input": "public"
               },
-              "src/manifest.json"
+              "src/manifest.json",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
