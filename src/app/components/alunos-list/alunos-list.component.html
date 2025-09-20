@@ -1,0 +1,31 @@
+<div class="alunos-list">
+
+    <div class="header">
+      <img src="assets/logo.png" alt="Inicie" class="logo" />
+      <h1>Lista de Alunos</h1>
+    </div>
+  
+    <button mat-raised-button color="primary" (click)="adicionarAluno()">Adicionar Aluno</button>
+    <table mat-table [dataSource]="alunos" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Nome </th>
+        <td mat-cell *matCellDef="let aluno"> {{aluno.name}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let aluno"> {{aluno.email}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef> Ações </th>
+        <td mat-cell *matCellDef="let aluno">
+          <button mat-button color="accent" (click)="editarAluno(aluno)">Editar</button>
+          <button mat-button color="warn" (click)="excluirAluno(aluno.id!)">Excluir</button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="['name','email','acoes']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name','email','acoes']"></tr>
+    </table>
+</div>

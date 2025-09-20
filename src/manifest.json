@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Gestão de Alunos",
+    "version": "1.0.0",
+    "description": "Extensão Angular",
+    "action": {
+      "default_popup": "index.html"
+    },
+    "permissions": [
+      "storage",
+      "activeTab",
+      "scripting"
+    ]
+  }
