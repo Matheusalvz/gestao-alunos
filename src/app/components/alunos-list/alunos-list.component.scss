@@ -1,0 +1,60 @@
+.alunos-list {
+    padding: 20px;
+  
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  
+      .logo {
+        height: 50px;
+        margin-right: 20px;
+      }
+  
+      h1 {
+        flex: 1;
+        font-size: 24px;
+        margin: 0;
+      }
+
+    }
+  
+    table {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    th.mat-header-cell,
+    td.mat-cell {
+      text-align: center;
+      vertical-align: middle;
+      border: 1px solid red; 
+    }
+
+    th.mat-header-cell {
+      font-weight: bold;
+    }
+  }
+
+  .sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+  
+    .welcome-message {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  
+    button {
+      min-width: 150px;
+      border-style: none;
+      border-width: 0px;
+      border-radius: 5px;
+      color: #ffffff;
+      background-color: #e6532d;
+    }
+  }
