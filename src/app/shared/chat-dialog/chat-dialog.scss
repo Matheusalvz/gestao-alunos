@@ -1,0 +1,59 @@
+:host {
+    display: block;
+  }
+  
+  .messages {
+    height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .message {
+    display: flex;
+    width: 100%;
+  
+    .bubble {
+      padding: 8px 12px;
+      border-radius: 16px;
+      max-width: 75%;
+      display: inline-block;
+    }
+  
+    &.mine {
+      justify-content: flex-end;
+      .bubble {
+        background: #e6532d;
+        color: white;
+      }
+    }
+  
+    &.other {
+      justify-content: flex-start;
+      .bubble {
+        background: #f1f1f1;
+        color: #222;
+      }
+    }
+  
+    .time {
+      display: block;
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+  }
+  
+  mat-dialog-actions.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-top: 12px;
+    width: 100%;
+  
+    .message-field {
+      flex: 1;
+    }
+  }
