@@ -58,3 +58,27 @@
       background-color: #e6532d;
     }
   }
+
+  .acoes-cell {
+    // display: flex;
+    justify-content: center;
+    gap: 10px;
+  
+    .icon-editar {
+      color: #0c5aa7;
+      transition: transform 0.2s;
+    }
+  
+    .icon-excluir {
+      color: #e53935;
+      transition: transform 0.2s;
+    }
+  
+    button:hover .icon-editar {
+      transform: scale(1.2);
+    }
+  
+    button:hover .icon-excluir {
+      transform: scale(1.2);
+    }
+  }

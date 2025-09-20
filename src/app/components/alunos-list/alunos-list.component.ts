@@ -7,11 +7,12 @@ import { AlunoService } from '../../services/aluno.service';
 import { Aluno } from '../../models/aluno.model';
 import { AlunoFormComponent } from '../alunos-form/aluno-form.component';
 import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-alunos-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDialogModule, MatIconModule],
   // providers: [
   //   provideHttpClient(withInterceptorsFromDi())
   // ],
