@@ -62,7 +62,12 @@
   .acoes-cell {
     // display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 7px;
+  
+    .icon-msg {
+      color: #0c5aa7;
+      transition: transform 0.2s;
+    }
   
     .icon-editar {
       color: #0c5aa7;
@@ -72,6 +77,10 @@
     .icon-excluir {
       color: #e53935;
       transition: transform 0.2s;
+    }
+  
+    button:hover .icon-msg {
+      transform: scale(1.2);
     }
   
     button:hover .icon-editar {
