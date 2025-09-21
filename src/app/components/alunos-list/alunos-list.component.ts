@@ -9,6 +9,7 @@ import { AlunoFormComponent } from '../alunos-form/aluno-form.component';
 import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { ChatDialogComponent } from '../../shared/chat-dialog/chat-dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-alunos-list',
@@ -22,11 +23,14 @@ import { ChatDialogComponent } from '../../shared/chat-dialog/chat-dialog';
 })
 export class AlunosListComponent implements OnInit {
   alunos: Aluno[] = [];
-
-  constructor(private alunoService: AlunoService, private dialog: MatDialog) {}
+  currentUserId: string|null = null;
+  currentUserName: string|null = null;
+  constructor(private alunoService: AlunoService, private router: Router, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.carregarAlunos();
+    this.currentUserId = sessionStorage.getItem('userId')!;
+    this.currentUserName = sessionStorage.getItem('userName')!;
   }
 
   carregarAlunos() {
@@ -34,7 +38,17 @@ export class AlunosListComponent implements OnInit {
   }
 
   iniciarChat(aluno: Aluno) {
-    const dialogRef = this.dialog.open(ChatDialogComponent, { width: '400px', data: aluno });
+
+    if (!this.currentUserId || !this.currentUserName) {
+      alert('Usuário não logado!');
+      return;
+    }
+    const dialogRef = this.dialog.open(ChatDialogComponent, { width: '400px', data: {
+      id: aluno.id, // Id do aluno que vai receber a mensagem
+      name: aluno.name,  // Nome do aluno que vai receber a mensagem
+      currentUserId: this.currentUserId, // ID do usuário que fez o login
+      currentUserName: this.currentUserId // Nome do usuário que fez o name
+    }});
     dialogRef.afterClosed().subscribe(result => {
       // if (result) this.carregarAlunos();
     });
@@ -58,5 +72,12 @@ export class AlunosListComponent implements OnInit {
     if (confirm('Deseja realmente excluir este aluno?')) {
       this.alunoService.excluir(id).subscribe(() => this.carregarAlunos());
     }
+  }
+
+  sair(){
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userName');
+    this.router.navigate(['/login']);
+
   }
 }

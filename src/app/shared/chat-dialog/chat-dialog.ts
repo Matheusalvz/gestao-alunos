@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { FormControl, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Component, Inject, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 import { SocketService } from '../../services/socket.service';
 
 interface Message {
-  from: string;
+  from: 'me' | 'other';
   text: string;
-  at?: string;
+  at: string;
 }
 
 @Component({
@@ -28,9 +28,9 @@ interface Message {
     MatIconModule
   ],
   templateUrl: './chat-dialog.html',
-  styleUrl: './chat-dialog.scss'
+  styleUrls: ['./chat-dialog.scss']
 })
-export class ChatDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   messages: Message[] = [];
   messageControl = new FormControl('', Validators.required);
@@ -38,33 +38,43 @@ export class ChatDialogComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     public dialogRef: MatDialogRef<ChatDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number; name?: string },
+    @Inject(MAT_DIALOG_DATA) public data: { id: number; name?: string; currentUserId: string },
     private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
-    console.log("data", this.data);
-    
-    this.socketService.registerClient();
+    // registra o usuário atual no Socket.IO
+    this.socketService.registerClient(this.data.currentUserId);
+
+    // escuta mensagens recebidas do outro usuário
     this.sub = this.socketService.onMessage().subscribe((msg: any) => {
-      this.messages.push({ from: 'other', text: msg, at: new Date().toLocaleTimeString() });
-      this.scrollToBottom();
+      // msg = { from: string, message: string }
+      if (msg.from !== this.data.currentUserId) {
+        this.messages.push({ from: 'other', text: msg.message, at: new Date().toLocaleTimeString() });
+        this.scrollToBottom();
+      }
     });
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      const el: HTMLInputElement | null = document.querySelector('.chat-input') as HTMLInputElement;
-      el?.focus();
-    });
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   send() {
     const text = this.messageControl.value?.trim();
     if (!text) return;
+
+    // adiciona localmente
     this.messages.push({ from: 'me', text, at: new Date().toLocaleTimeString() });
     this.scrollToBottom();
-    this.socketService.sendMessage(text);
+
+    // envia para o outro usuário
+    this.socketService.sendMessage({
+      to: this.data.id, // id do aluno que receberá a mensagem
+      message: text,
+      from: this.data.currentUserId
+    });
+
     this.messageControl.reset();
   }
 

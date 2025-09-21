@@ -6,7 +6,7 @@
     </div>
 
     <div class="sub-header">
-      <span class="welcome-message">Olá, seja bem-vindo</span>
+      <span class="welcome-message">Bem-vindo {{currentUserName}}!</span>
       <button mat-raised-button color="primary" (click)="adicionarAluno()">Adicionar Aluno</button>
     </div>
 
@@ -41,4 +41,7 @@
       <tr mat-header-row *matHeaderRowDef="['name','email','acoes']"></tr>
       <tr mat-row *matRowDef="let row; columns: ['name','email','acoes']"></tr>
     </table>
+    <div class="footer">
+      <button mat-raised-button color="primary" (click)="sair()">Sair</button>
+    </div>
 </div>

@@ -32,7 +32,6 @@ export class LoginComponent {
     //   return;
     // }
 
-    // // aqui você chamaria sua API de login
     // const { email, password } = this.form.value;
     // console.log('Login', { email, password });
 
@@ -44,6 +43,14 @@ export class LoginComponent {
     this.alunoService.login(email, password).subscribe({
       next: (aluno) => {
         console.log('Login sucesso!', aluno);
+
+        if ( aluno && aluno.id && aluno.name) {
+          sessionStorage.setItem('userId', aluno.id.toString());
+          sessionStorage.setItem('userName', aluno.name);
+        }else{
+          this.error = 'Erro ao obter dados do usuário';
+          return;
+        }
         this.router.navigate(['/alunos']);
       },
       error: (err) => {
