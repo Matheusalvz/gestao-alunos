@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { AlunoService } from '../../services/aluno.service';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +16,9 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   form: FormGroup;
+  error: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private alunoService: AlunoService) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -25,15 +27,32 @@ export class LoginComponent {
   }
 
   login() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    // if (this.form.invalid) {
+    //   this.form.markAllAsTouched();
+    //   return;
+    // }
 
-    // aqui você chamaria sua API de login
+    // // aqui você chamaria sua API de login
+    // const { email, password } = this.form.value;
+    // console.log('Login', { email, password });
+
+    // this.router.navigate(['/alunos']);
+
+    if (this.form.invalid) return;
+
     const { email, password } = this.form.value;
-    console.log('Login', { email, password });
+    this.alunoService.login(email, password).subscribe({
+      next: (aluno) => {
+        console.log('Login sucesso!', aluno);
+        this.router.navigate(['/alunos']);
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Erro no login';
+      },
+    });
+  }
 
+  forgotPassword(){
     this.router.navigate(['/alunos']);
   }
 }

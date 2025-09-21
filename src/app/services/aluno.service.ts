@@ -26,4 +26,8 @@ export class AlunoService {
   excluir(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  login(email: string, password: string): Observable<Aluno> {
+    return this.http.post<Aluno>(`${this.apiUrl}/login`, { email, password });
+  }
 }
