@@ -5,12 +5,13 @@ import { AlunosListComponent } from './app/components/alunos-list/alunos-list.co
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app/app.routes';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AppComponent } from './app/app/app.component';
 
 // bootstrapApplication(App, appConfig)
 //   .catch((err) => console.error(err));
 
 
-bootstrapApplication(AlunosListComponent, {
+bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(appRoutes),
     provideHttpClient(withInterceptorsFromDi()) //Http global
