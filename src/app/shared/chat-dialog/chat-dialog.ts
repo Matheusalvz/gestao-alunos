@@ -48,7 +48,6 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
 
     // escuta mensagens recebidas do outro usuário
     this.sub = this.socketService.onMessage().subscribe((msg: any) => {
-      // msg = { from: string, message: string }
       if (msg.from !== this.data.currentUserId) {
         this.messages.push({ from: 'other', text: msg.message, at: new Date().toLocaleTimeString() });
         this.scrollToBottom();
