@@ -1,0 +1,25 @@
+<div class="login-container">
+
+    <img class="logo" src="assets/logo.png" alt="Inicie" class="logo" />
+
+    <h2>Faça seu login</h2>
+  
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+        <mat-error *ngIf="form.get('email')?.hasError('required')">Email obrigatório</mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Email inválido</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput formControlName="password" type="password" />
+        <mat-error *ngIf="form.get('password')?.hasError('required')">Senha obrigatória</mat-error>
+      </mat-form-field>
+  
+      <button mat-raised-button color="primary" class="full-width login-button" type="submit">
+        Entrar
+      </button>
+    </form>
+</div>

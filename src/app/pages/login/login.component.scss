@@ -1,0 +1,37 @@
+.login-container {
+    min-width: 350px;
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logo{
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    margin: 0 auto;;
+}
+  
+.full-width {
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.login-button {
+    min-width: 150px;
+    border-style: none;
+    border-width: 0px;
+    border-radius: 5px;
+    color: #ffffff !important;
+    background-color: #e6532d !important;
+}
