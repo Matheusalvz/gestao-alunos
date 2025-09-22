@@ -27,8 +27,8 @@ interface Message {
     MatButtonModule,
     MatIconModule
   ],
-  templateUrl: './chat-dialog.html',
-  styleUrls: ['./chat-dialog.scss']
+  templateUrl: './chat-dialog.component.html',
+  styleUrls: ['./chat-dialog.component.scss']
 })
 export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
