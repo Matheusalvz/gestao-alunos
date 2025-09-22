@@ -45,21 +45,24 @@ export class SocketService {
     return this.privateMessage$;
   }
 
-  // Captura de tela
+  // Envio da solicitação de captura de tela chamada pelo botão para api
   requestScreenShot(to: string) {
     this.socket.emit('request-screenshot', { to });
   }
 
+  // Envia a captura após o usuário aceitar
   sendScreenShot(payload: { to: string; from: string; dataUrl: string }) {
     this.socket.emit('screen-shot', payload);
   }
 
+  // Recebe o screenshot do outro usuário
   onScreenShot(): Observable<{ from: string; dataUrl: string }> {
     return new Observable(observer => {
       this.socket.on('screen-shot', data => observer.next(data));
     });
   }
 
+  // Recebe a solicitação de captura da api
   onRequestScreenShot(): Observable<{ from: string }> {
     return new Observable(observer => {
       this.socket.on('request-screenshot', data => observer.next(data));
