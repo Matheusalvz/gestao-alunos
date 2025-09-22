@@ -60,4 +60,19 @@
     .message-field {
       flex: 1;
     }
-  }
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      color: #e6532d;
+      background-color: transparent;
+      border: none;
+      width: 36px !important;
+      height: 36px !important;
+      cursor: pointer;
+    }
+
+    
+}

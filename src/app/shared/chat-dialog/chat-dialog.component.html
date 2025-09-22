@@ -32,12 +32,16 @@
       />
     </mat-form-field>
 
-    <button mat-icon-button color="primary" (click)="send()" [disabled]="messageControl.invalid">
+    <button class="send-button" color="primary" (click)="send()" [disabled]="messageControl.invalid" matTooltip="Enviar mensagem">
       <mat-icon>send</mat-icon>
     </button>
 
-    <button mat-button (click)="captureAndSendScreen()"><mat-icon>screen_share</mat-icon></button>
+    <button class="screen-share-button" (click)="socketService.requestScreenShot(data.id.toString())" matTooltip="Solicitar captura de tela">
+      <mat-icon>screen_share</mat-icon>
+    </button>
 
-    <button mat-button (click)="close()">Fechar</button>
+    <button class="close-button" (click)="close()" matTooltip="Fechar">
+      <mat-icon>close</mat-icon>
+    </button>
   </mat-dialog-actions>
 </div>
