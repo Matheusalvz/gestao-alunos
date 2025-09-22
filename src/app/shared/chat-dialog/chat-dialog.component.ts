@@ -122,7 +122,7 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
     this.scrollToBottom();
 
     this.socketService.sendMessage({
-      to: String(this.data.id),
+      to: this.data.id.toString(),
       message: text,
       from: this.data.currentUserId
     });
