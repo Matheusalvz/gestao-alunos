@@ -4,7 +4,12 @@
     "version": "1.0.0",
     "description": "Extensão Angular",
     "action": {
-      "default_popup": "index.html"
+      "default_popup": "index.html",
+      "default_icon": {
+      "16": "assets/icons/inicia_icon_16.png",
+      "48": "assets/icons/inicia_icon_48.png",
+      "128": "assets/icons/inicia_icon_128.png"
+    }
     },
     "permissions": [
       "storage",
