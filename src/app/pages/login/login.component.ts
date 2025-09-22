@@ -86,4 +86,8 @@ export class LoginComponent {
   forgotPassword(){
     this.router.navigate(['/alunos']);
   }
+
+  openInNewTab() {
+    window.open('http://localhost:4200', '_blank');
+  }
 }
