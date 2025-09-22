@@ -7,6 +7,7 @@ interface ScreenShotPayload { from: string; dataUrl: string; }
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private socket!: Socket;
+  private privateMessage$?: Observable<{ from: string; to: string; message: string; image?: string }>;
 
   constructor() {
     this.socket = io('http://localhost:3000');
@@ -23,8 +24,15 @@ export class SocketService {
   }
 
   registerClient(userId: string) {
-    this.socket.emit('register', userId);
-    console.log('registerClient chamado (placeholder)');
+    if (this.socket.connected) {
+      this.socket.emit('register', userId);
+      console.log('registerClient chamado (socket já conectado)');
+    } else {
+      this.socket.on('connect', () => {
+        this.socket.emit('register', userId);
+        console.log('registerClient chamado após conexão');
+      });
+    }
   }
 
   // envia para o servidor
@@ -40,6 +48,16 @@ export class SocketService {
     return new Observable(observer => {
       this.socket.on('message', (data: { from: string; message: string }) => observer.next(data));
     });
+  }
+
+
+  onPrivateMessage(): Observable<{ from: string; to: string; message: string; image?: string }> {
+    if (!this.privateMessage$) {
+      this.privateMessage$ = new Observable(observer => {
+        this.socket.on('private-message', data => observer.next(data));
+      });
+    }
+    return this.privateMessage$;
   }
 
   //envia screenshot

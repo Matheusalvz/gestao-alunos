@@ -45,16 +45,32 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
   ngOnInit(): void {
     // registra o usuário atual no Socket.IO
     this.socketService.registerClient(this.data.currentUserId);
-
-    // escuta mensagens recebidas do outro usuário
-    this.sub = this.socketService.onMessage().subscribe(msg => {
-      const fromOther = msg.from !== this.data.currentUserId; // true se a mensagem é do outro usuário
+  
+    // adiciona a mensagem inicial (se houver)
+    if ((this.data as any).initialMessage) {
       this.messages.push({
-        from: fromOther ? 'other' : 'me',
-        text: msg.message,
+        from: 'other', // remetente
+        text: (this.data as any).initialMessage,
         at: new Date().toLocaleTimeString()
       });
-      this.scrollToBottom();
+      if ((this.data as any).image) {
+        this.screenImage = (this.data as any).image;
+      }
+    }
+  
+    // escuta mensagens recebidas do outro usuário
+    this.sub = this.socketService.onPrivateMessage().subscribe(msg => {
+      const isForMe = msg.to === this.data.currentUserId;
+      const fromOther = msg.from !== this.data.currentUserId;
+      if (isForMe) {
+        this.messages.push({
+          from: fromOther ? 'other' : 'me',
+          text: msg.message,
+          at: new Date().toLocaleTimeString()
+        });
+        if (msg.image) this.screenImage = msg.image;
+        this.scrollToBottom();
+      }
     });
   }
 
