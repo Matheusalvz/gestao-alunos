@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { SocketService } from '../../services/socket.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -40,10 +40,13 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
   messageControl = new FormControl('', Validators.required);
   private sub?: Subscription;
   screenImage: string | null = null;
+  private destroy$ = new Subject<void>();
+
   constructor(
     public dialogRef: MatDialogRef<ChatDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { id: number; name?: string; currentUserId: string; initialMessage?: string; image?: string },
-    public socketService: SocketService
+    public socketService: SocketService,
+    
   ) {}
 
   ngOnInit(): void {
@@ -60,7 +63,7 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
     }
 
     // escuta mensagens privadas
-    this.sub = this.socketService.onPrivateMessage().subscribe(msg => {
+    this.sub = this.socketService.onPrivateMessage().pipe(takeUntil(this.destroy$)).subscribe(msg => {
       const isForMe = msg.to === this.data.currentUserId;
       if (isForMe) {
         this.messages.push({
@@ -74,7 +77,7 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
     });
 
     // escuta solicitções de captura de tela
-    this.socketService.onRequestScreenShot().subscribe(async ({ from }) => {
+    this.socketService.onRequestScreenShot().pipe(takeUntil(this.destroy$)).subscribe(async ({ from }) => {
       const confirmCapture = confirm(`Outro usuário solicitou um screenshot da sua tela. Aceita?`);
       if (!confirmCapture) return;
     
@@ -99,7 +102,9 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
     })
 
     // Receber screenshot do outro
-    this.socketService.onScreenShot().subscribe(s => {
+    this.socketService.onScreenShot().pipe(takeUntil(this.destroy$)).subscribe(s => {
+      console.log("Recebeu screenshot", s);
+      
       this.messages.push({
         from: 'other',
         text: '',
@@ -185,6 +190,8 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
   }
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+    // this.sub?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
