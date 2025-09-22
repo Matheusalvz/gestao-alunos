@@ -14,6 +14,7 @@ interface Message {
   from: 'me' | 'other';
   text: string;
   at: string;
+  dataUrl?: string;
 }
 
 @Component({
@@ -74,7 +75,7 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
 
     // Pedido de captura de tela
     this.socketService.onRequestScreenShot().subscribe(async ({ from }) => {
-      const confirmCapture = confirm(`${from} solicitou um screenshot da sua tela. Aceita?`);
+      const confirmCapture = confirm(`Outro usuário solicitou um screenshot da sua tela. Aceita?`);
       if (!confirmCapture) return;
     
       // Captura a tela do usuário atual
