@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { SocketService } from '../../services/socket.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface Message {
   from: 'me' | 'other';
@@ -17,6 +18,7 @@ interface Message {
 
 @Component({
   selector: 'app-chat-dialog',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -25,7 +27,8 @@ interface Message {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './chat-dialog.component.html',
   styleUrls: ['./chat-dialog.component.scss']
@@ -38,33 +41,29 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
   screenImage: string | null = null;
   constructor(
     public dialogRef: MatDialogRef<ChatDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { id: number; name?: string; currentUserId: string },
-    private socketService: SocketService
+    @Inject(MAT_DIALOG_DATA) public data: { id: number; name?: string; currentUserId: string; initialMessage?: string; image?: string },
+    public socketService: SocketService
   ) {}
 
   ngOnInit(): void {
-    // registra o usuário atual no Socket.IO
     this.socketService.registerClient(this.data.currentUserId);
   
-    // adiciona a mensagem inicial (se houver)
-    if ((this.data as any).initialMessage) {
+    // adiciona mensagem inicial
+    if (this.data.initialMessage) {
       this.messages.push({
-        from: 'other', // remetente
-        text: (this.data as any).initialMessage,
+        from: 'other',
+        text: this.data.initialMessage,
         at: new Date().toLocaleTimeString()
       });
-      if ((this.data as any).image) {
-        this.screenImage = (this.data as any).image;
-      }
+      if (this.data.image) this.screenImage = this.data.image;
     }
-  
-    // escuta mensagens recebidas do outro usuário
+
+    // escuta mensagens privadas
     this.sub = this.socketService.onPrivateMessage().subscribe(msg => {
       const isForMe = msg.to === this.data.currentUserId;
-      const fromOther = msg.from !== this.data.currentUserId;
       if (isForMe) {
         this.messages.push({
-          from: fromOther ? 'other' : 'me',
+          from: msg.from !== this.data.currentUserId ? 'other' : 'me',
           text: msg.message,
           at: new Date().toLocaleTimeString()
         });
@@ -72,23 +71,40 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
         this.scrollToBottom();
       }
     });
+
+    // Pedido de captura de tela
+    this.socketService.onRequestScreenShot().subscribe(async ({ from }) => {
+      const confirmCapture = confirm(`${from} solicitou um screenshot da sua tela. Aceita?`);
+      if (!confirmCapture) return;
+    
+      // Captura a tela do usuário atual
+      const dataUrl = await this.captureAndSendScreen();
+      if (dataUrl) {
+        this.socketService.sendScreenShot({ to: from, from: this.data.currentUserId, dataUrl });
+      }
+    })
+
+    // Receber screenshot do outro
+    this.socketService.onScreenShot().subscribe(s => {
+      this.screenImage = s.dataUrl;
+      this.messages.push({ from: 'other', text: '[Screenshot recebido]', at: new Date().toLocaleTimeString() });
+      this.scrollToBottom();
+    });
   }
 
   ngAfterViewChecked(): void {
     this.scrollToBottom();
   }
 
-  send() {
+  send(): void {
     const text = this.messageControl.value?.trim();
     if (!text) return;
 
-    // adiciona localmente
     this.messages.push({ from: 'me', text, at: new Date().toLocaleTimeString() });
     this.scrollToBottom();
 
-    // envia para o outro usuário
     this.socketService.sendMessage({
-      to: String(this.data.id), // id do aluno que receberá a mensagem
+      to: String(this.data.id),
       message: text,
       from: this.data.currentUserId
     });
@@ -96,42 +112,27 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
     this.messageControl.reset();
   }
 
-  private scrollToBottom() {
-    try {
-      const el = this.messagesContainer?.nativeElement;
-      el.scrollTop = el.scrollHeight;
-    } catch {}
-  }
-
-  close() {
+  close(): void {
     this.dialogRef.close();
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-  }
-
-  async captureAndSendScreen() {
+  async captureAndSendScreen(toId?: string): Promise<string | undefined> {
     try {
-      // seleção do tipo de captura tela/aba/janela
       const mediaStream = await (navigator.mediaDevices as any).getDisplayMedia({
         video: { cursor: 'always' },
         audio: false
       });
   
-      // cria elemento video oculto para desenhar frame
       const video = document.createElement('video');
       video.autoplay = true;
       video.srcObject = mediaStream;
   
-      // aguarda metadata para ter dimensões
       await new Promise<void>((resolve) => {
         video.onloadedmetadata = () => {
           video.play().then(() => resolve()).catch(() => resolve());
         };
       });
   
-      // capturar frame em canvas redimensionado para reduzir tamanho
       const w = Math.min(1280, video.videoWidth);
       const h = Math.round((w / video.videoWidth) * video.videoHeight);
       const canvas = document.createElement('canvas');
@@ -140,22 +141,32 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
       const ctx = canvas.getContext('2d')!;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-      // comprime e pega data URL (jpeg com qualidade)
       const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
   
-      // para a stream (fechar permissão)
       mediaStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
   
-      // envia via socket
-      const toId = this.data.id.toString(); // destinatário
-      const fromId = this.data.currentUserId; // id do usuário atual
-      this.socketService.sendScreenShot({ to: toId, from: fromId, dataUrl });
-  
-      // mostrar preview localmente
       this.screenImage = dataUrl;
   
+      // se passar o toId, envia automaticamente
+      if (toId) {
+        this.socketService.sendScreenShot({ to: toId, from: this.data.currentUserId, dataUrl });
+      }
+  
+      return dataUrl; // retorna o resultado
     } catch (err) {
       console.error('Erro ao capturar a tela:', err);
+      return undefined; // garante retorno mesmo em caso de erro
     }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      const el = this.messagesContainer?.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    } catch {}
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
   }
 }

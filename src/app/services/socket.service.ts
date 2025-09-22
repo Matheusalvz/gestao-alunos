@@ -12,44 +12,29 @@ export class SocketService {
   constructor() {
     this.socket = io('http://localhost:3000');
   
-    // loga quando a conexão é estabelecida
-    this.socket.on('connect', () => {
-      console.log('Socket conectado! ID:', this.socket.id);
-    });
-  
-    // loga erros de conexão
-    this.socket.on('connect_error', (err) => {
-      console.error('Erro de conexão:', err);
-    });
+      // loga quando a conexão é estabelecida
+      this.socket.on('connect', () => {
+        console.log('Socket conectado! ID:', this.socket.id);
+      });
+    
+      // loga erros de conexão
+      this.socket.on('connect_error', (err) => {
+        console.error('Erro de conexão:', err);
+      });
   }
 
   registerClient(userId: string) {
     if (this.socket.connected) {
       this.socket.emit('register', userId);
-      console.log('registerClient chamado (socket já conectado)');
     } else {
-      this.socket.on('connect', () => {
-        this.socket.emit('register', userId);
-        console.log('registerClient chamado após conexão');
-      });
+      this.socket.on('connect', () => this.socket.emit('register', userId));
     }
   }
 
-  // envia para o servidor
-  // sendMessage(payload: { to: string | number; message: string; from: string }) { //testando
-  // sendMessage(payload: { to: number; message: string; from: string }) {
+  // Mensagens privadas
   sendMessage(payload: { to: string; message: string; from: string; image?: string }) {
-    console.log('Emitindo private-message:', payload);
-    console.log('Enviando do socket.id=', this.socket.id);
     this.socket.emit('private-message', payload);
   }
-
-  onMessage(): Observable<{ from: string; message: string }> {
-    return new Observable(observer => {
-      this.socket.on('message', (data: { from: string; message: string }) => observer.next(data));
-    });
-  }
-
 
   onPrivateMessage(): Observable<{ from: string; to: string; message: string; image?: string }> {
     if (!this.privateMessage$) {
@@ -60,15 +45,24 @@ export class SocketService {
     return this.privateMessage$;
   }
 
-  //envia screenshot
+  // Captura de tela
+  requestScreenShot(to: string) {
+    this.socket.emit('request-screenshot', { to });
+  }
+
   sendScreenShot(payload: { to: string; from: string; dataUrl: string }) {
     this.socket.emit('screen-shot', payload);
   }
 
-  onScreenShot(): Observable<ScreenShotPayload> {
+  onScreenShot(): Observable<{ from: string; dataUrl: string }> {
     return new Observable(observer => {
-      this.socket.on('screen-shot', (data: ScreenShotPayload) => observer.next(data));
+      this.socket.on('screen-shot', data => observer.next(data));
     });
   }
 
+  onRequestScreenShot(): Observable<{ from: string }> {
+    return new Observable(observer => {
+      this.socket.on('request-screenshot', data => observer.next(data));
+    });
+  }
 }
