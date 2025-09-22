@@ -28,7 +28,8 @@ export class AlunoFormComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.required, Validators.email]]
+      email: [this.data?.email || '', [Validators.required, Validators.email]],
+      password: ['',this.data  ? []  : [Validators.required, Validators.minLength(6)]] // criação: obrigatória, edição: opcional
     });
   }
 

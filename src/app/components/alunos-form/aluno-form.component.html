@@ -14,6 +14,13 @@
       <mat-error *ngIf="form.get('email')?.hasError('email')">Email inválido</mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <mat-label>Senha</mat-label>
+      <input matInput type="password" formControlName="password">
+      <mat-error *ngIf="form.get('password')?.hasError('required')">A senha é obrigatória</mat-error>
+      <mat-error *ngIf="form.get('password')?.hasError('minlength')">A senha deve ter pelo menos 6 caracteres</mat-error>
+    </mat-form-field>
+
     <div mat-dialog-actions class="acoes-container">
       <button mat-button type="button" (click)="dialogRef.close()">Cancelar</button>
       <button class="confirm-button" mat-button color="primary" type="submit">Salvar</button>
