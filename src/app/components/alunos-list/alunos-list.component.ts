@@ -8,7 +8,7 @@ import { Aluno } from '../../models/aluno.model';
 import { AlunoFormComponent } from '../alunos-form/aluno-form.component';
 import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
-import { ChatDialogComponent } from '../../shared/chat-dialog/chat-dialog';
+import { ChatDialogComponent } from '../../shared/chat-dialog/chat-dialog.component';
 import { Router } from '@angular/router';
 
 @Component({
