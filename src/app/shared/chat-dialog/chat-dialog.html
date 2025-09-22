@@ -1,34 +1,43 @@
-<h3 mat-dialog-title>Chat com {{ data.name || ('Aluno #' + data.id) }}</h3>
+<div class="chat-dialog-container">
 
-<mat-dialog-content>
-  <div #messagesContainer class="messages">
-    <div
-      *ngFor="let m of messages"
-      class="message"
-      [ngClass]="{ mine: m.from === 'me', other: m.from === 'other' }"
-    >
-      <div class="bubble">
-        <span class="text">{{ m.text }}</span>
-        <small class="time">{{ m.at }}</small>
+  <h3 mat-dialog-title>Chat com {{ data.name || ('Aluno #' + data.id) }}</h3>
+
+  <mat-dialog-content>
+    <div #messagesContainer class="messages">
+      <div
+        *ngFor="let m of messages"
+        class="message"
+        [ngClass]="{ mine: m.from === 'me', other: m.from === 'other' }"
+      >
+        <div class="bubble">
+          <span class="text">{{ m.text }}</span>
+          <small class="time">{{ m.at }}</small>
+        </div>
+      </div>
+      <!-- Confirmar se deixa aqui mesmo -->
+      <div *ngIf="screenImage" class="screenshot-preview">
+        <img [src]="screenImage" alt="Screenshot" style="max-width:100%; border-radius:8px" /> 
       </div>
     </div>
-  </div>
-</mat-dialog-content>
+  </mat-dialog-content>
 
-<mat-dialog-actions class="actions">
-  <mat-form-field class="message-field" appearance="outline">
-    <input
-      matInput
-      placeholder="Digite sua mensagem"
-      [formControl]="messageControl"
-      (keydown.enter)="send()"
-      class="chat-input"
-    />
-  </mat-form-field>
+  <mat-dialog-actions class="actions">
+    <mat-form-field class="message-field" appearance="outline">
+      <input
+        matInput
+        placeholder="Digite sua mensagem"
+        [formControl]="messageControl"
+        (keydown.enter)="send()"
+        class="chat-input"
+      />
+    </mat-form-field>
 
-  <button mat-icon-button color="primary" (click)="send()" [disabled]="messageControl.invalid">
-    <mat-icon>send</mat-icon>
-  </button>
+    <button mat-icon-button color="primary" (click)="send()" [disabled]="messageControl.invalid">
+      <mat-icon>send</mat-icon>
+    </button>
 
-  <button mat-button (click)="close()">Fechar</button>
-</mat-dialog-actions>
+    <button mat-button (click)="captureAndSendScreen()"><mat-icon>screen_share</mat-icon></button>
+
+    <button mat-button (click)="close()">Fechar</button>
+  </mat-dialog-actions>
+</div>
