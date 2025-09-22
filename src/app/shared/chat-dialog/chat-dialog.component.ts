@@ -73,7 +73,7 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
       }
     });
 
-    // Pedido de captura de tela
+    // escuta solicitções de captura de tela
     this.socketService.onRequestScreenShot().subscribe(async ({ from }) => {
       const confirmCapture = confirm(`Outro usuário solicitou um screenshot da sua tela. Aceita?`);
       if (!confirmCapture) return;
@@ -81,14 +81,31 @@ export class ChatDialogComponent implements OnInit, AfterViewChecked, OnDestroy 
       // Captura a tela do usuário atual
       const dataUrl = await this.captureAndSendScreen();
       if (dataUrl) {
-        this.socketService.sendScreenShot({ to: from, from: this.data.currentUserId, dataUrl });
+        this.socketService.sendScreenShot({ 
+          to: from, 
+          from: this.data.currentUserId, 
+          dataUrl 
+        });
+    
+        this.messages.push({
+          from: 'me',
+          text: '',
+          dataUrl,
+          at: new Date().toLocaleTimeString()
+        });
+    
+        this.scrollToBottom();
       }
     })
 
     // Receber screenshot do outro
     this.socketService.onScreenShot().subscribe(s => {
-      this.screenImage = s.dataUrl;
-      this.messages.push({ from: 'other', text: '[Screenshot recebido]', at: new Date().toLocaleTimeString() });
+      this.messages.push({
+        from: 'other',
+        text: '',
+        dataUrl: s.dataUrl,
+        at: new Date().toLocaleTimeString()
+      });
       this.scrollToBottom();
     });
   }

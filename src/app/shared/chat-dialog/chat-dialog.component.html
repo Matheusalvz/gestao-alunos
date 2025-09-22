@@ -11,13 +11,14 @@
       >
         <div class="bubble">
           <span class="text">{{ m.text }}</span>
+          <img *ngIf="m.dataUrl" [src]="m.dataUrl" alt="Screenshot" style="max-width:100%; border-radius:8px" />
           <small class="time">{{ m.at }}</small>
         </div>
       </div>
       <!-- Confirmar se deixa aqui mesmo -->
-      <div *ngIf="screenImage" class="screenshot-preview">
+      <!-- <div *ngIf="screenImage" class="screenshot-preview">
         <img [src]="screenImage" alt="Screenshot" style="max-width:100%; border-radius:8px" /> 
-      </div>
+      </div> -->
     </div>
   </mat-dialog-content>
 
