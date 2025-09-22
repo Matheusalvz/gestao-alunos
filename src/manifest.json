@@ -6,9 +6,9 @@
     "action": {
       "default_popup": "index.html",
       "default_icon": {
-      "16": "assets/icons/inicia_icon_16.png",
-      "48": "assets/icons/inicia_icon_48.png",
-      "128": "assets/icons/inicia_icon_128.png"
+      "16": "assets/icons/inicie_icon_16.png",
+      "48": "assets/icons/inicie_icon_48.png",
+      "128": "assets/icons/inicie_icon_128.png"
     }
     },
     "permissions": [
